@@ -4,11 +4,13 @@ import mongoose from 'mongoose';
 
 import TransactionNotificationHandler from './handlers/TransactionNotification.handler';
 import PayoutNotificationHandler from './handlers/PayoutNotification.handler';
+import EndOfDayReportHandler from './handlers/EndOfDayReport.handler';
 
 const app = express();
 
 const transactionNotificationHandler = new TransactionNotificationHandler();
 const payoutNotificationHandler = new PayoutNotificationHandler();
+const endOfDayReportHandler = new EndOfDayReportHandler();
 
 app.use(bodyParser.json());
 
@@ -25,6 +27,16 @@ app.post('/transaction', async (req, res) => {
 app.post('/payout', async (req, res) => {
   try {
     await payoutNotificationHandler.receivePayoutNotification(req);
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.post('/report', async (req, res) => {
+  try {
+    await endOfDayReportHandler.receiveEndOfDayReport(req);
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
